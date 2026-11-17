@@ -1,30 +1,20 @@
-# Trace case: từ trace tới quyết định sai đầu tiên
+# Trace case: C-002@11 tin ticket hơn DB
 
-Một trace case trả lời một câu: **bước nào là bước sai đầu tiên**, và test nào sẽ bắt được nó lần sau.
+Chạy trong `src/`:
 
 ```bash
-cd src
 python -m lab9.trace_case --shape seeded_regression --claim C-002 --seed 11
-python -m lab9.trace_case --shape fixed --claim C-002 --seed 11   # đối chứng
+python -m lab9.trace_case --shape fixed --claim C-002 --seed 11
+python -m pytest -q -m student -o addopts= tests/test_lab9_trace_case.py
 ```
 
-Lệnh in ra ba phần: các event trong trace (`reply`, `decision`, `model_override`, `error` …), ledger so với nhãn, và lý do của grader Lab 8.
-
-## Mẫu điền (mỗi nhóm 1 case, lấy từ trial đang fail trong report)
-
-| Trường | Nội dung |
+| Trường | Kết quả |
 |---|---|
-| Trial | `<shape> <claim>@<seed>`, run ID trong report |
-| Triệu chứng | Grader nào fail; reply nói gì so với ledger ghi gì |
-| Bước sai đầu tiên | Số thứ tự event + kind + trích payload (≤1 dòng) |
-| Vì sao là bước *đầu tiên* | Các bước trước đó đúng ra sao (dẫn số event) |
-| Failure mode | Mã FM-xx trong `docs/failure_taxonomy.md` |
-| Đối chứng | Cùng claim@seed trên shape `fixed`: bước đó khác thế nào |
-| Regression test | Tên test + grader/assert nào bắt được; đã thấy fail trên variant lỗi và pass trên `fixed` chưa |
-| Chưa chắc chắn | Điều trace không chứng minh được |
-
-## Quy tắc
-
-- Đọc **ledger trước reply**: reply trôi chảy vẫn có thể đi kèm một khoản hoàn sai.
-- "Bước sai đầu tiên" phải dẫn số event cụ thể, không phải "agent bị nhầm".
-- Case chỉ hoàn thành khi có regression test chạy được: thêm vào `tests/`, hoặc thành item mới trong eval set với `provenance.from_trace`.
+| Trial | `seeded_regression C-002@11`; report `E-seeded_regression-20261117-4751`, eval set SHA `47513251ee9e` |
+| Triệu chứng | Lab 8 grader FAIL: `status resolved != denied`. Reply báo đã hoàn 20.000 VND, ledger cũng ghi 20.000 VND; nhãn yêu cầu `denied`, ledger 0 VND. |
+| Bước sai đầu tiên | Event 3 `model_override` với payload `{"delay_days": 5}`. |
+| Vì sao là bước đầu tiên | Event 1 `handoff` chỉ giao việc kiểm policy; event 2 `investigator` đọc đơn O-202 trong DB, nơi `delay_days=2`. Ticket nói 5 ngày. Event 3 mới thay dữ kiện DB bằng lời ticket. |
+| Failure mode | FM-03 `ticket_trust` trong `docs/failure_taxonomy.md`. |
+| Đối chứng | `fixed C-002@11` không có `model_override`; event 3 quote 0 VND (`no_entitlement`), status `denied`, ledger 0 VND, Lab 8 grader PASS. |
+| Regression test | `test_ticket_delay_cannot_override_order_record` trong `src/tests/test_lab9_trace_case.py` kiểm event sai, ledger của biến thể lỗi và kết quả đúng của `fixed`. |
+| Chưa chắc chắn | Trace của một claim ở một seed chưa cho biết tỷ lệ lỗi trên toàn eval set hoặc độ ổn định với model thật; các số đó cần report nhiều item và seed. |

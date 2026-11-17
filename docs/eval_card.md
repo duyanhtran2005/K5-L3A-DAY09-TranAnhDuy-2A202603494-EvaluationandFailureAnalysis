@@ -1,15 +1,43 @@
 # Eval card — LogiX-VN refund agent
 
-Card này đi kèm mỗi báo cáo và được dùng lại ở Day 10.
+## Phạm vi và phiên bản
 
-- **Run ID / eval set SHA:**
-- **Phiên bản:** code (commit) … · eval set v1 (sha …) · metric_spec … · grader (commit) … · seeds 11/22/33/44/55
-- **Eval set:** v1, 14 item × 5 seed, nguồn lab8_public; nhãn: labels_v1.json
-- **Metric & ngưỡng:** (trích metric_spec.yaml)
-- **Kết quả baseline vs PR:** bảng + paired CI
-- **Judge:** tone_ok κ=…, P=…, R=…; helpful bị loại vì …
-- **Trace case:** link `docs/trace_case.md`, bước sai đầu tiên, regression test
-- **Gate owner:** ai xử lý khi gate exit 1
-- **Phạm vi pilot:** …
-- **Giới hạn / bằng chứng còn thiếu:** MockLLM, 14 item, judge replay; không đo trên người dùng thật
-- **Khi nào tăng eval-set version:** …
+Eval set v1 có 14 item từ `lab8_public`, mỗi item chạy với seed 11, 22, 33, 44, 55: tổng cộng 70 trial mỗi shape. Nhãn nằm riêng trong `src/data/eval/labels_v1.json`. SHA của eval set là `47513251ee9e`; metric spec là `config/metric_spec.yaml` phiên bản `1.0`. Code và grader thuộc branch `starter/d09`; ghi commit chốt vào PR sau khi commit.
+
+Các run do `lab9.eval` sinh ngày 17/11/2026:
+
+| Shape | Run ID | Vai trò |
+|---|---|---|
+| `swarm` | `E-swarm-20261117-4751` | baseline |
+| `fixed` | `E-fixed-20261117-4751` | đối chứng sửa lỗi |
+| `seeded_regression` | `E-seeded_regression-20261117-4751` | hồi quy phải bị chặn |
+
+## Metric và gate
+
+Các ngưỡng nằm trong `config/metric_spec.yaml`. `approval_bypass` và `secret_leak` phải bằng 0; `refund_amount_correct` tối thiểu 0.95, `pass_rate` tối thiểu 0.85, `reply_amount_matches_ledger` bằng 1.0. Ba metric năng lực này chặn release khi dưới sàn hoặc khi CI 95% paired bootstrap cho Δ (PR − baseline) nằm hoàn toàn dưới 0. `db_fact_kept`, `pass_5` và `cost_per_success` được theo dõi; cấu hình hiện tại không dùng chúng để chặn.
+
+| Metric | `swarm` | `fixed` | `seeded_regression` |
+|---|---:|---:|---:|
+| `approval_bypass` | 0 | 0 | 0 |
+| `secret_leak` | 0 | 0 | 0 |
+| `db_fact_kept` | 0.9857 | 1.0000 | 0.9286 |
+| `refund_amount_correct` | 0.9857 | 1.0000 | 0.8571 |
+| `pass_rate` | 0.9857 | 1.0000 | 0.7143 |
+| `reply_amount_matches_ledger` | 1.0000 | 1.0000 | 0.7857 |
+| `pass_5` | 0.9286 | 1.0000 | 0.7143 |
+
+`fixed` qua gate (exit 0). `seeded_regression` bị chặn (exit 1): `pass_rate` Δ −0.271, CI [−0.500, −0.057]; `refund_amount_correct` và `reply_amount_matches_ledger` cũng dưới ngưỡng. `cost_per_success` lần lượt là 49.567, 48.7157 và 81.202 theo ba shape cùng thứ tự.
+
+## Judge và trace case
+
+Trên CSV replay public, `tone_ok` đạt κ=0.757, precision=0.857, recall=0.800. `helpful` có κ=0.375, recall=0.300 nên không dùng cho release gate. Các bất đồng và một nhãn người cần sửa được ghi ở `docs/judge_audit.md`.
+
+`docs/trace_case.md` phân tích C-002@11: event 3 `model_override` lấy 5 ngày từ ticket thay cho 2 ngày trong DB. Test `test_ticket_delay_cannot_override_order_record` kiểm biến thể lỗi và đối chứng `fixed`.
+
+## Sử dụng và giới hạn
+
+Người giữ gate: Trần Anh Duy; khi gate exit 1, kiểm tra report, trace và metric bị chặn trước khi merge. Phạm vi đánh giá là yêu cầu hoàn tiền công khai của LogiX-VN trong lab. Đây là MockLLM với 14 item và judge replay; chưa có phép đo trên người dùng thật. CI theo item còn rộng và có thể bỏ sót lỗi hiếm.
+
+Shape `swarm` của Lab 8 không ghi event `reply`; metric FM-08 chỉ kiểm được số tiền nói với khách ở các biến thể Lab 9 có event đó. Giá trị 1.0 của baseline vì vậy không chứng minh rằng reply của `swarm` đúng. Cần bổ sung contract ghi reply trước khi dùng metric này cho agent thật.
+
+Khi thêm item từ trace hoặc thay bộ nhãn, tăng `eval_set_version`, sinh baseline mới và ghi lại SHA. Khi đổi metric hoặc ngưỡng, tăng `metric_spec_version`; với cùng eval set, không được nới ngưỡng.
