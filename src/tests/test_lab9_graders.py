@@ -55,3 +55,11 @@ def test_reply_amount_must_match_committed_ledger(graders):
     wrong = trial(refund_vnd=20000, events=[{"kind": "reply", "payload": {"text": "Đã hoàn 35.000đ cho đơn O-808."}}])
     assert graders.ReplyAmountMatchesLedger().evaluate(ctx(good)).value is True
     assert graders.ReplyAmountMatchesLedger().evaluate(ctx(wrong)).value is False
+
+
+def test_proposal_amount_catches_error_even_when_ledger_is_zero(graders):
+    t = trial(refund_vnd=0, refund_count=0)
+    t["result"]["proposal_amount"] = 0
+    label = {**LABEL, "refund_vnd": 0, "proposal_amount": 35000}
+    assert graders.RefundAmountCorrect().evaluate(ctx(t, label)).value is True
+    assert graders.ProposalAmountCorrect().evaluate(ctx(t, label)).value is False
