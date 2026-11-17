@@ -3,11 +3,12 @@
 import pytest
 
 from lab8.shapes import SHAPES
-from lab9.trace_case import investigate
+
 
 
 @pytest.mark.student
 def test_ticket_delay_cannot_override_order_record():
+    from lab9.trace_case import investigate
     original_shapes = set(SHAPES)
     try:
         bad = investigate("seeded_regression", "C-002", 11)["trial"]

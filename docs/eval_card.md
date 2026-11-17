@@ -2,15 +2,15 @@
 
 ## Phạm vi và phiên bản
 
-Eval set v1 có 14 item từ `lab8_public`, mỗi item chạy với seed 11, 22, 33, 44, 55: tổng cộng 70 trial mỗi shape. Nhãn nằm riêng trong `src/data/eval/labels_v1.json`. SHA của eval set là `47513251ee9e`; metric spec là `config/metric_spec.yaml` phiên bản `1.0`. Code và grader Core bắt đầu ở commit `9c183d6`; grader kiểm proposal được bổ sung ở `4206e55`. Ghi commit chốt toàn bài vào PR khi nộp.
+Eval set v1 có 14 item từ `lab8_public`, mỗi item chạy với seed 11, 22, 33, 44, 55: tổng cộng 70 trial mỗi shape. Nhãn nằm riêng trong `src/data/eval/labels_v1.json`. SHA của eval set là `989e878ffc46`; metric spec là `config/metric_spec.yaml` phiên bản `1.0`. Code và grader Core bắt đầu ở commit `9c183d6`; grader kiểm proposal được bổ sung ở `4206e55`. Ghi commit chốt toàn bài vào PR khi nộp.
 
 Các run do `lab9.eval` sinh ngày 17/11/2026:
 
 | Shape | Run ID | Vai trò |
 |---|---|---|
-| `swarm` | `E-swarm-20261117-4751` | baseline |
-| `fixed` | `E-fixed-20261117-4751` | đối chứng sửa lỗi |
-| `seeded_regression` | `E-seeded_regression-20261117-4751` | hồi quy phải bị chặn |
+| `swarm` | `E-swarm-20261117-989e` | baseline |
+| `fixed` | `E-fixed-20261117-989e` | đối chứng sửa lỗi |
+| `seeded_regression` | `E-seeded_regression-20261117-989e` | hồi quy phải bị chặn |
 
 ## Metric và gate
 
@@ -45,7 +45,7 @@ Khi thêm item từ trace hoặc thay bộ nhãn, tăng `eval_set_version`, sinh
 
 ## Eval set v2 và kiểm tra độ ổn định
 
-Eval set v2 có 28 item, gồm 14 item v1 và 14 item adversarial; SHA `bc1b63783427`. `config/fm_map.yaml` ánh xạ cơ chế tấn công sang FM-02 đến FM-09. Baseline `E-swarm-20261117-bc1b` chạy 28 item × 5 seed với `config/metric_spec_v2.yaml`; `pass_rate=0.9786`, `proposal_amount_correct=0.9786` và `pass_hat_5=0.8929`.
+Eval set v2 có 28 item, gồm 14 item v1 và 14 item adversarial; SHA `1eeb749cfa90`. `config/fm_map.yaml` ánh xạ cơ chế tấn công sang FM-02 đến FM-09. Baseline `E-swarm-20261117-1eeb` chạy 28 item × 5 seed với `config/metric_spec_v2.yaml`; `pass_rate=0.9786`, `proposal_amount_correct=0.9786` và `pass_hat_5=0.8929`.
 
 A/A chạy cùng `swarm` trên seed 11/22/33/44/55 và 66/77/88/99/110. Δ=0.0000 cho mọi metric được in, gồm `pass_hat_5`; sàn blocking của metric này là 0.85, dưới baseline 0.8929. Đây chỉ là dải nhiễu trên MockLLM xác định. Với model thật cần nhiều lần chạy và chọn sàn ngoài dải nhiễu đo được.
 

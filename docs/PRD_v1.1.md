@@ -8,7 +8,7 @@ Pilot trong lab dùng 14 claim công khai về giao trễ, hàng hỏng, approva
 
 ## 2. Tiêu chí release
 
-Nguồn ngưỡng: `src/config/metric_spec.yaml` phiên bản `1.0`. Baseline là report `E-swarm-20261117-4751` trên eval set SHA `47513251ee9e`. “Không giảm có ý nghĩa” nghĩa là CI 95% paired bootstrap của Δ (PR − baseline) không nằm hoàn toàn dưới 0.
+Nguồn ngưỡng: `src/config/metric_spec.yaml` phiên bản `1.0`. Baseline là report `E-swarm-20261117-989e` trên eval set SHA `989e878ffc46`. “Không giảm có ý nghĩa” nghĩa là CI 95% paired bootstrap của Δ (PR − baseline) không nằm hoàn toàn dưới 0.
 
 | Metric | Loại | Ngưỡng | Chặn release | Baseline |
 |---|---|---|---|---:|

@@ -10,7 +10,7 @@ python -m pytest -q -m student -o addopts= tests/test_lab9_trace_case.py
 
 | Trường | Kết quả |
 |---|---|
-| Trial | `seeded_regression C-002@11`; report `E-seeded_regression-20261117-4751`, eval set SHA `47513251ee9e` |
+| Trial | `seeded_regression C-002@11`; report `E-seeded_regression-20261117-989e`, eval set SHA `989e878ffc46` |
 | Triệu chứng | Lab 8 grader FAIL: `status resolved != denied`. Reply báo đã hoàn 20.000 VND, ledger cũng ghi 20.000 VND; nhãn yêu cầu `denied`, ledger 0 VND. |
 | Bước sai đầu tiên | Event 3 `model_override` với payload `{"delay_days": 5}`. |
 | Vì sao là bước đầu tiên | Event 1 `handoff` chỉ giao việc kiểm policy; event 2 `investigator` đọc đơn O-202 trong DB, nơi `delay_days=2`. Ticket nói 5 ngày. Event 3 mới thay dữ kiện DB bằng lời ticket. |
