@@ -2,7 +2,7 @@
 
 ## Phạm vi và phiên bản
 
-Eval set v1 có 14 item từ `lab8_public`, mỗi item chạy với seed 11, 22, 33, 44, 55: tổng cộng 70 trial mỗi shape. Nhãn nằm riêng trong `src/data/eval/labels_v1.json`. SHA của eval set là `47513251ee9e`; metric spec là `config/metric_spec.yaml` phiên bản `1.0`. Code và grader thuộc branch `starter/d09`; ghi commit chốt vào PR sau khi commit.
+Eval set v1 có 14 item từ `lab8_public`, mỗi item chạy với seed 11, 22, 33, 44, 55: tổng cộng 70 trial mỗi shape. Nhãn nằm riêng trong `src/data/eval/labels_v1.json`. SHA của eval set là `47513251ee9e`; metric spec là `config/metric_spec.yaml` phiên bản `1.0`. Code và grader Core nằm ở commit `9c183d6` trên branch `starter/d09`; ghi commit chốt toàn bài vào PR khi nộp.
 
 Các run do `lab9.eval` sinh ngày 17/11/2026:
 
@@ -41,3 +41,15 @@ Người giữ gate: Trần Anh Duy; khi gate exit 1, kiểm tra report, trace v
 Shape `swarm` của Lab 8 không ghi event `reply`; metric FM-08 chỉ kiểm được số tiền nói với khách ở các biến thể Lab 9 có event đó. Giá trị 1.0 của baseline vì vậy không chứng minh rằng reply của `swarm` đúng. Cần bổ sung contract ghi reply trước khi dùng metric này cho agent thật.
 
 Khi thêm item từ trace hoặc thay bộ nhãn, tăng `eval_set_version`, sinh baseline mới và ghi lại SHA. Khi đổi metric hoặc ngưỡng, tăng `metric_spec_version`; với cùng eval set, không được nới ngưỡng.
+
+## Eval set v2 và kiểm tra độ ổn định
+
+Eval set v2 có 28 item, gồm 14 item v1 và 14 item adversarial; SHA `bc1b63783427`. `config/fm_map.yaml` ánh xạ cơ chế tấn công sang FM-02 đến FM-09. Baseline `E-swarm-20261117-bc1b` chạy 28 item × 5 seed với `config/metric_spec_v2.yaml`; `pass_rate=0.9786` và `pass_hat_5=0.8929`.
+
+A/A chạy cùng `swarm` trên seed 11/22/33/44/55 và 66/77/88/99/110. Δ=0.0000 cho mọi metric được in, gồm `pass_hat_5`; sàn blocking của metric này là 0.85, dưới baseline 0.8929. Đây chỉ là dải nhiễu trên MockLLM xác định. Với model thật cần nhiều lần chạy và chọn sàn ngoài dải nhiễu đo được.
+
+Gate v2 dùng slice `money_movement`, `adversarial` và `denial`. Trong scorecard công khai, `slice_regression` có `pass_rate=0.9357`, vẫn trên sàn toàn cục 0.85; chỉ `slice:money_movement/pass_rate` chặn được nó. `flaky_regression` bị chặn bởi `pass_hat_5` cùng các kiểm tra khác. Scorecard đạt 3/3 hồi quy bị chặn, 0 báo nhầm trên `fixed` và `honest_refactor`.
+
+`integrity_check` chặn cả bốn trap công khai: `evaluator_errors_as_nan`, `dropped_failing_rows`, `cherry_picked_seeds` và `loosened_spec` (trap cuối dùng `--base-spec`). Bộ chấm còn có trap ẩn; report trùng dòng hoặc evaluator failure trên một run xanh là hai trường hợp phải tiếp tục kiểm tra.
+
+Với 5 seed, lỗi chỉ xuất hiện ở 1/3 seed không được phát hiện ổn định. Không hạ sàn chỉ để gate chặn một lần chạy may rủi; cần thêm seed hoặc item đại diện trước khi kết luận.
