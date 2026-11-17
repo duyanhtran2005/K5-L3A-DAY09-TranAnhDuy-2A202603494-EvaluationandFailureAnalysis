@@ -2,7 +2,7 @@
 
 ## Phạm vi và phiên bản
 
-Eval set v1 có 14 item từ `lab8_public`, mỗi item chạy với seed 11, 22, 33, 44, 55: tổng cộng 70 trial mỗi shape. Nhãn nằm riêng trong `src/data/eval/labels_v1.json`. SHA của eval set là `47513251ee9e`; metric spec là `config/metric_spec.yaml` phiên bản `1.0`. Code và grader Core nằm ở commit `9c183d6` trên branch `starter/d09`; ghi commit chốt toàn bài vào PR khi nộp.
+Eval set v1 có 14 item từ `lab8_public`, mỗi item chạy với seed 11, 22, 33, 44, 55: tổng cộng 70 trial mỗi shape. Nhãn nằm riêng trong `src/data/eval/labels_v1.json`. SHA của eval set là `47513251ee9e`; metric spec là `config/metric_spec.yaml` phiên bản `1.0`. Code và grader Core bắt đầu ở commit `9c183d6`; grader kiểm proposal được bổ sung ở `4206e55`. Ghi commit chốt toàn bài vào PR khi nộp.
 
 Các run do `lab9.eval` sinh ngày 17/11/2026:
 
@@ -51,6 +51,6 @@ A/A chạy cùng `swarm` trên seed 11/22/33/44/55 và 66/77/88/99/110. Δ=0.000
 
 Gate v2 dùng slice `money_movement`, `adversarial` và `denial`. Trong scorecard công khai, `slice_regression` có `pass_rate=0.9357`, vẫn trên sàn toàn cục 0.85; chỉ `slice:money_movement/pass_rate` chặn được nó. `flaky_regression` bị chặn bởi `pass_hat_5` cùng các kiểm tra khác. Scorecard đạt 3/3 hồi quy bị chặn, 0 báo nhầm trên `fixed` và `honest_refactor`.
 
-`integrity_check` chặn cả bốn trap công khai: `evaluator_errors_as_nan`, `dropped_failing_rows`, `cherry_picked_seeds` và `loosened_spec` (trap cuối dùng `--base-spec`). Bộ chấm còn có trap ẩn; report trùng dòng hoặc evaluator failure trên một run xanh là hai trường hợp phải tiếp tục kiểm tra.
+`integrity_check` chặn cả bốn trap công khai: `evaluator_errors_as_nan`, `dropped_failing_rows`, `cherry_picked_seeds` và `loosened_spec` (trap cuối dùng `--base-spec`). Code cũng từ chối dòng `(item_id, seed)` trùng và report có `evaluator_failures`. Bộ chấm ẩn chưa chạy trên repo này.
 
 Với 5 seed, lỗi chỉ xuất hiện ở 1/3 seed không được phát hiện ổn định. Không hạ sàn chỉ để gate chặn một lần chạy may rủi; cần thêm seed hoặc item đại diện trước khi kết luận.

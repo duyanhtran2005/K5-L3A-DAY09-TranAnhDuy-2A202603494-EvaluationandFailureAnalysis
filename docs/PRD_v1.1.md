@@ -33,7 +33,7 @@ Nguồn ngưỡng: `src/config/metric_spec.yaml` phiên bản `1.0`. Baseline l�
 | FM-03 | Ticket đè dữ liệu DB | `DbFactKept`, `TrialPass` (code) | Trace có `model_override`; outcome có nhãn. |
 | FM-04 | Cộng hoặc làm tròn sai quote | `ProposalAmountCorrect`, `RefundAmountCorrect`, `TrialPass` (code) | Đề xuất và ledger phải khớp nhãn. |
 | FM-05 | Khấu trừ trước khi host xử lý | `ProposalAmountCorrect`, `RefundAmountCorrect` (code) | Proposal có thể sai dù ledger vẫn là 0. |
-| FM-06 | Dùng điều khoản cũ | `TrialPass` và kiểm clause (code) | Tính hiệu lực policy là quy tắc xác định. |
+| FM-06 | Dùng điều khoản cũ | `TrialPass`, `RefundAmountCorrect` (code) | Outcome và ledger lệch nhãn khi áp dụng clause cũ; chưa có grader riêng kiểm `is_current`. |
 | FM-07 | Ghi refund cho claim cùng đơn | `ApprovalBypass`, `TrialPass` (code) | `unexpected_rows` phát hiện khoản ghi sai claim. |
 | FM-08 | Reply khác ledger | `ReplyAmountMatchesLedger` (code) | Số tiền nói với khách phải bằng khoản host đã ghi. |
 
